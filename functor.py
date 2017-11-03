@@ -39,18 +39,3 @@ class Functor(object):
             raise Warning("实例对象已经被释放,引用:%s,绑定方法:%s" %
                           (self._objdesc, self._func))
         return self._func(obj, *(self._args + args))
-
-
-class CTest(object):
-    def test(self):
-        print("Test...")
-
-
-def test():
-    obj = CTest()
-    func = Functor(obj.test)
-    del obj
-    func()
-
-
-test()
