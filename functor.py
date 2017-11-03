@@ -12,7 +12,7 @@ import weakref
 import types
 
 
-def isboundmethod(func):
+def is_bound_method(func):
     if not isinstance(func, types.MethodType):
         return False
     if not func.__self__:
@@ -22,7 +22,7 @@ def isboundmethod(func):
 
 class Functor(object):
     def __init__(self, func, *args):
-        if isboundmethod(func):
+        if is_bound_method(func):
             self._obj = weakref.ref(func.__self__)
             self._objdesc = str(func.__self__)
             self._func = func.__func__
