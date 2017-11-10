@@ -16,10 +16,11 @@ def getpwd():
     return pwd
 
 
-def write_to_file(filename, sMsg):
-    filepath = os.path.join(getpwd(), filename)
-    dirpath = os.path.dirname(filepath)
-    if not os.path.exists(dirpath):
-        os.makedirs(dirpath)
-    with codecs.open(filepath, "a", "utf-8") as myfile:
-        myfile.write(sMsg + "\n")
+def write_to_file(filename, msg):
+    pathname = os.path.join(getpwd(), filename)
+    pathname += ".txt"
+    dirname = os.path.dirname(pathname)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    with codecs.open(pathname, "a", "utf-8") as myfile:
+        myfile.write(msg + "\t\n")
