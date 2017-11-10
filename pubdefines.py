@@ -8,8 +8,18 @@
 """
 
 import os
+import codecs
 
 
 def getpwd():
     pwd = os.getcwd()
     return pwd
+
+
+def write_to_file(filename, sMsg):
+    filepath = os.path.join(getpwd(), filename)
+    dirpath = os.path.dirname(filepath)
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+    with codecs.open(filepath, "a", "utf-8") as myfile:
+        myfile.write(sMsg + "\n")
