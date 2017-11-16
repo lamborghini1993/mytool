@@ -10,6 +10,7 @@
 import os
 import codecs
 import time
+import traceback
 
 
 def getpwd():
@@ -27,7 +28,7 @@ def write_to_file(filename, msg):
         myfile.write(msg)
 
 
-def filter(msg):
+def filter_crlf(msg):
     msg = msg.replace("\r", "")
     msg = msg.replace("\n", "")
     return msg
@@ -69,3 +70,27 @@ def time_to_str(ti=-1, timeformat="%Y-%m-%d %H:%M:%S"):
     strtime = time.strftime(timeformat, ltime)
     return strtime
 
+
+def get_trace_text(*args):
+    """用于获得回溯栈信息文本"""
+    txtlist = []
+    txtlist.append("-----------------------------------------------------")
+    stacklist = traceback.extract_stack()
+    for filename, lineno, name, line in stacklist[:-2]:
+        txt = " File '%s', line %s, CallFunctor '%s', in '%s'" % (
+            filename, lineno, line, name)
+        txtlist.append(txt)
+    if args:
+        txt = "其他信息："
+        for tmp in args:
+            txt = "%s%s," % (txt, tmp)
+        txt = txt[:-1]
+        txtlist.append(txt)
+    return txtlist
+
+
+def trace_msg(*args):
+    """回溯栈信息（调用情况）,用于调用不明的bug分析"""
+    txtlist = get_trace_text(*args)
+    for txt in txtlist:
+        print(txt)
