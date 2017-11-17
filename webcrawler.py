@@ -11,7 +11,7 @@
 
 import urllib.request
 import bs4
-import pubdefines
+from mytool import pubdefines
 
 
 class CWebCrawler(object):

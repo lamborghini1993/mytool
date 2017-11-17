@@ -11,7 +11,7 @@ import os
 import codecs
 import time
 import traceback
-import webcrawler
+from mytool import webcrawler
 
 
 def getpwd():
