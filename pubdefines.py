@@ -11,6 +11,7 @@ import os
 import codecs
 import time
 import traceback
+import webcrawler
 
 
 def getpwd():
@@ -20,7 +21,7 @@ def getpwd():
 
 def write_to_file(filename, msg):
     pathname = os.path.join(getpwd(), filename)
-    pathname += ".txt"
+    pathname += ".log"
     dirname = os.path.dirname(pathname)
     makedirs(dirname)
     msg = "[{}]{}\n".format(time_to_str(), msg)
@@ -94,3 +95,17 @@ def trace_msg(*args):
     txtlist = get_trace_text(*args)
     for txt in txtlist:
         print(txt)
+
+
+def get_bs4_by_url(url, coding="utf-8", trynum=10, timeout=10):
+    """获取url对应的bs4对象"""
+    obj = webcrawler.WEB_CRAWLER_OBJ
+    result = obj.get_bs4_by_url(url, coding, trynum, timeout)
+    return result
+
+
+def get_data_by_url(url, coding="utf-8", trynum=10, timeout=10):
+    """获取url对应的data数据"""
+    obj = webcrawler.WEB_CRAWLER_OBJ
+    result = obj.get_data_by_url(url, coding, trynum, timeout)
+    return result
