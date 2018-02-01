@@ -51,5 +51,18 @@ class CWebCrawler(object):
         return None
 
 
+def get_bs4_by_url(url, coding="utf-8", trynum=10, timeout=10):
+    """获取url对应的bs4对象"""
+    obj = webcrawler.WEB_CRAWLER_OBJ
+    result = obj.get_bs4_by_url(url, coding, trynum, timeout)
+    return result
+
+
+def get_data_by_url(url, coding="utf-8", trynum=10, timeout=10):
+    """获取url对应的data数据"""
+    obj = webcrawler.WEB_CRAWLER_OBJ
+    result = obj.get_data_by_url(url, coding, trynum, timeout)
+    return result
+
 if "WEB_CRAWLER_OBJ" not in globals():
     WEB_CRAWLER_OBJ = CWebCrawler()

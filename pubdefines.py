@@ -11,7 +11,28 @@ import os
 import codecs
 import time
 import traceback
-from mytool import webcrawler
+
+
+if "g_Manager" not in globals():
+    g_Manager = {}
+
+
+def set_manager(sFlag, obj):
+    global g_Manager
+    g_Manager[sFlag] = obj
+
+def get_manager(sFlag):
+    global g_Manager
+    obj = g_Manager.get(sFlag, None)
+    return obj
+
+def call_manager_func(sFlag, sFunc, *args):
+    obj = get_manager(sFlag)
+    func = getattr(obj, sFunc)
+    if not func:
+        return None
+    result = func(*args)
+    return result
 
 
 def getpwd():
@@ -97,15 +118,4 @@ def trace_msg(*args):
         print(txt)
 
 
-def get_bs4_by_url(url, coding="utf-8", trynum=10, timeout=10):
-    """获取url对应的bs4对象"""
-    obj = webcrawler.WEB_CRAWLER_OBJ
-    result = obj.get_bs4_by_url(url, coding, trynum, timeout)
-    return result
 
-
-def get_data_by_url(url, coding="utf-8", trynum=10, timeout=10):
-    """获取url对应的data数据"""
-    obj = webcrawler.WEB_CRAWLER_OBJ
-    result = obj.get_data_by_url(url, coding, trynum, timeout)
-    return result
