@@ -93,6 +93,12 @@ def time_to_str(ti=-1, timeformat="%Y-%m-%d %H:%M:%S"):
     return strtime
 
 
+def str_to_time(sTime, timeformat="%Y-%m-%d %H:%M:%S"):
+    oTime = time.strptime(sTime, timeformat)
+    iTime = int(time.mktime(oTime))
+    return iTime
+
+
 def get_trace_text(*args):
     """用于获得回溯栈信息文本"""
     txtlist = []
