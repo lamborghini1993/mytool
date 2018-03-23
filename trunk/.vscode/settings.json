@@ -11,7 +11,7 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/__pycache__": true,
-        "mytool/.*": true
+        "pubcode/.*": true
     },
     "editor.tabSize": 4,
     "editor.renderWhitespace": "boundary",
@@ -30,7 +30,7 @@
         "--disable=C0111"
     ],
 
-    // fileheader相关
+    // fileheaderç›¸å…³
     "fileheader.Author": "lamborghini1993",
     "fileheader.tpl": "# -*- coding: utf-8 -*-\r\n\"\"\"\r\n@Author: {author}\r\n@Date: {createTime}\r\n@Last Modified by:   {lastModifiedBy}\r\n@Last Modified time: {updateTime}\r\n@Desc:\r\n\"\"\"\r\n",
     "fileheader.LastModifiedBy": "lamborghini1993",

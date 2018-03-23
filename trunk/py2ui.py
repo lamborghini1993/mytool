@@ -4,7 +4,7 @@
 import os
 import sys
 
-lstIgnore = [".git", ".vscode", "__pycache__", "mytool", "log"]
+lstIgnore = [".git", ".vscode", "__pycache__", "pubcode", "log"]
 
 def IsIgnore(sDir):
     for sTmp in lstIgnore:
