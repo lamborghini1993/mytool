@@ -20,6 +20,8 @@
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "vsicons.dontShowNewVersionMessage": true,
+    // git定时自动获取
+    "git.autofetch": true,
 
     //// python
     "python.pythonPath": "/usr/bin/python3",
