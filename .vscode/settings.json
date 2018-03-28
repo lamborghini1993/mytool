@@ -22,13 +22,13 @@
     "vsicons.dontShowNewVersionMessage": true,
 
     //// python
-    "python.pythonPath": "C:\\Python36\\python.exe",
+    "python.pythonPath": "/usr/bin/python3",
     // pep8
-    "python.linting.pep8Enabled": true,
-    "python.formatting.autopep8Args": [
-        "--max-line-length=80"
-        // "--select=E20,E211,E22,E224,E226,E227,E228,E231,W291"
-    ],
+    // "python.linting.pep8Enabled": true,
+    // "python.formatting.autopep8Args": [
+    //     "--max-line-length=80"
+    //     // "--select=E20,E211,E22,E224,E226,E227,E228,E231,W291"
+    // ],
     // pylint
     "python.linting.pylintEnabled": true,
     "python.linting.pylintArgs": [
