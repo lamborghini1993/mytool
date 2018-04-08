@@ -79,5 +79,10 @@ def PythonError(msg=""):
 def Write2File(filename, msg):
     filename += ".log"
     msg = "[{}]{}\n".format(Time2Str(), msg)
-    with codecs.open(filename, "w+", "utf-8") as myfile:
+    with codecs.open(filename, "a+", "utf-8") as myfile:
         myfile.write(msg)
+
+
+def GetSecond():
+    curtime = int(time.time())
+    return curtime
