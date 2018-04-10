@@ -76,10 +76,10 @@ def PythonError(msg=""):
     return sLog
 
 
-def Write2File(filename, msg):
+def Write2File(filename, msg, sType="a+"):
     filename += ".log"
     msg = "[{}]{}\n".format(Time2Str(), msg)
-    with codecs.open(filename, "a+", "utf-8") as myfile:
+    with codecs.open(filename, sType, "utf-8") as myfile:
         myfile.write(msg)
 
 

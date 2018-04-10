@@ -8,15 +8,16 @@
 import os
 import asyncio
 import aiohttp
+import time
 
 from pubcode import misc
 
 
 class CPubCrawler(object):
     m_Flag = ""
-    m_MaxNum = 1000
+    m_MaxNum = 2000
     m_Encoding = "utf-8"
-    
+    m_DebugPrint = False
 
     m_WrongChar = r"<>/|:\"*?"
     m_ConfigDir = "Config"
@@ -61,6 +62,7 @@ class CPubCrawler(object):
 
 
     def _Load(self):
+        self.DebugPrint("_Load")
         self.m_WaitingUrl = misc.JsonLoad(self.m_WaitingConfigPath, {})
         self.m_ReadyUrl = misc.JsonLoad(self.m_ReadyConfigPath, {})
         self.m_DoingUrl = misc.JsonLoad(self.m_DoingConfigPath, {})
@@ -70,14 +72,22 @@ class CPubCrawler(object):
         self.m_WaitingUrl.update(self.m_DoingUrl)
         self.m_ReadyUrl.clear()
         self.m_DoingUrl.clear()
-        self.DebugPrint("_Load")
 
 
     def _Save(self):
+        self.DebugPrint("_Save")
         misc.JsonDump(self.m_WaitingUrl, self.m_WaitingConfigPath)
         misc.JsonDump(self.m_ReadyUrl, self.m_ReadyConfigPath)
         misc.JsonDump(self.m_DoingUrl, self.m_DoingConfigPath)
         misc.JsonDump(self.m_DoneInfo, self.m_DoneInfoConfigPath)
+
+
+    def _Restart(self):
+        time.sleep(1)
+        self.DebugPrint("_Restart")
+        self._Save()
+        self._Load()
+        self.Start()
 
 
     def Start(self):
@@ -85,9 +95,13 @@ class CPubCrawler(object):
         try:
             self.m_Loop.run_until_complete(self.Run())
             self.m_Loop.close()
+        except OSError as e:
+            info = misc.PythonError(str(e))
+            misc.Write2File(self.m_ErrorPath, info, "a+")
+            self._Restart()
         except Exception as e:
             info = misc.PythonError(str(e))
-            misc.Write2File(self.m_ErrorPath, info)
+            misc.Write2File(self.m_ErrorPath, info, "a+")
 
         self._Save()
         self.DebugPrint("Start_End")
@@ -102,10 +116,14 @@ class CPubCrawler(object):
 
 
     def DebugPrint(self, msg):
-        print(msg, len(self.m_WaitingUrl), len(self.m_ReadyUrl), len(self.m_DoingUrl), len(self.m_DoneInfo))
+        if self.m_DebugPrint:
+            print(msg, len(self.m_WaitingUrl), len(self.m_ReadyUrl), len(self.m_DoingUrl), len(self.m_DoneInfo))
 
 
     def NewCrawel(self):
+        self.m_WaitingUrl.update(self.m_DoingUrl)
+        self.m_DoingUrl.clear()
+
         tInfo = []
         for url, dInfo in self.m_WaitingUrl.items():
             iType = dInfo["priority"]
@@ -114,7 +132,6 @@ class CPubCrawler(object):
         tInfo = sorted(tInfo, key=lambda x: x[2])
         tInfo = sorted(tInfo, key=lambda x: x[1], reverse=True)
 
-        # while (len(self.m_ReadyUrl) + len(self.m_DoingUrl)) < self.m_MaxNum and tInfo:
         while (len(self.m_ReadyUrl) ) < self.m_MaxNum and tInfo:
             url, *args = tInfo.pop(0)
             self.m_ReadyUrl[url] = self.m_WaitingUrl.pop(url)
@@ -123,8 +140,7 @@ class CPubCrawler(object):
 
     async def Run(self):
         async with aiohttp.ClientSession() as self.m_Session:
-            # while self.NewCrawel() and (len(self.m_ReadyUrl) + len(self.m_DoingUrl)):
-            while self.NewCrawel() and (len(self.m_WaitingUrl) + len(self.m_ReadyUrl) + len(self.m_DoingUrl)):
+            while self.NewCrawel() and (len(self.m_WaitingUrl) + len(self.m_ReadyUrl)):
                 self.DebugPrint("Run")
                 if not self.m_ReadyUrl:
                     await asyncio.sleep(0.1)
@@ -134,9 +150,6 @@ class CPubCrawler(object):
                 for url, dInfo in self.m_ReadyUrl.items():
                     oTask = self.m_Loop.create_task(self.Crawl(url, dInfo))
                     tasks.append(oTask)
-
-                # tasks = [self.m_Loop.create_task(self.Crawl(tInfo)) for tInfo in self.m_ReadyUrl]
-
                 self.m_DoingUrl.update(self.m_ReadyUrl)
                 self.m_ReadyUrl.clear()
 
