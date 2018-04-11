@@ -18,24 +18,28 @@ class CPubCrawler(object):
     m_MaxNum = 2000
     m_Encoding = "utf-8"
     m_DebugPrint = False
+    m_MyHeader = {}
+    m_Url = ""
 
     m_WrongChar = r"<>/|:\"*?"
     m_ConfigDir = "Config"
     m_DownDir = "Downloads"
-    m_headers = {
-        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Encoding':'gb2312,utf-8',
-        'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
-        'Accept-Language':'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
-        'Connection':'Keep-alive'
+    m_Headers = {
+        "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Encoding":"gb2312,utf-8",
+        "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0",
+        "Accept-Language":"zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2",
+        "Connection":"Keep-alive"
     }
 
     def __init__(self):
         self.m_WaitingUrl = {}
         self.m_ReadyUrl = {}
         self.m_DoingUrl = {}
+        self.m_FailUrl = {}
         self.m_DoneInfo = {}
         self.m_Loop = asyncio.get_event_loop()
+        self.m_Headers.update(self.m_MyHeader)
         self._Init()
         self._Load()
         self._CustomInit()
@@ -52,6 +56,7 @@ class CPubCrawler(object):
         self.m_ReadyConfigPath = os.path.join(self.m_ConfigPath, "Ready.json")
         self.m_DoingConfigPath = os.path.join(self.m_ConfigPath, "Doing.json")
         self.m_DoneInfoConfigPath = os.path.join(self.m_ConfigPath, "DoneInfo.json")
+        self.m_FailConfigPath = os.path.join(self.m_ConfigPath, "Fail.json")
 
         self.m_ErrorPath = os.path.join(self.m_ConfigPath, "error")
         self.m_LogPath = os.path.join(self.m_ConfigPath, "log")
@@ -62,11 +67,13 @@ class CPubCrawler(object):
 
 
     def _Load(self):
-        self.DebugPrint("_Load")
         self.m_WaitingUrl = misc.JsonLoad(self.m_WaitingConfigPath, {})
         self.m_ReadyUrl = misc.JsonLoad(self.m_ReadyConfigPath, {})
         self.m_DoingUrl = misc.JsonLoad(self.m_DoingConfigPath, {})
         self.m_DoneInfo = misc.JsonLoad(self.m_DoneInfoConfigPath, {})
+        self.m_FailUrl = misc.JsonLoad(self.m_FailConfigPath, {})
+
+        self.DebugPrint("_Load")
 
         self.m_WaitingUrl.update(self.m_ReadyUrl)
         self.m_WaitingUrl.update(self.m_DoingUrl)
@@ -80,6 +87,7 @@ class CPubCrawler(object):
         misc.JsonDump(self.m_ReadyUrl, self.m_ReadyConfigPath)
         misc.JsonDump(self.m_DoingUrl, self.m_DoingConfigPath)
         misc.JsonDump(self.m_DoneInfo, self.m_DoneInfoConfigPath)
+        misc.JsonDump(self.m_FailUrl, self.m_FailConfigPath)
 
 
     def _Restart(self):
@@ -99,6 +107,7 @@ class CPubCrawler(object):
             info = misc.PythonError(str(e))
             misc.Write2File(self.m_ErrorPath, info, "a+")
             self._Restart()
+            return
         except Exception as e:
             info = misc.PythonError(str(e))
             misc.Write2File(self.m_ErrorPath, info, "a+")
@@ -117,7 +126,7 @@ class CPubCrawler(object):
 
     def DebugPrint(self, msg):
         if self.m_DebugPrint:
-            print(msg, len(self.m_WaitingUrl), len(self.m_ReadyUrl), len(self.m_DoingUrl), len(self.m_DoneInfo))
+            print(msg, len(self.m_WaitingUrl), len(self.m_ReadyUrl), len(self.m_DoingUrl), len(self.m_DoneInfo), len(self.m_FailUrl))
 
 
     def NewCrawel(self):
@@ -163,7 +172,7 @@ class CPubCrawler(object):
 
 
     async def Crawl(self, url, dInfo):
-        r = await self.m_Session.get(url, headers=self.m_headers)
+        r = await self.m_Session.get(url, headers=self.m_Headers)
         html = await r.text(encoding=self.m_Encoding)
         return url, dInfo, html
 
