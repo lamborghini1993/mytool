@@ -136,7 +136,7 @@ class CPubCrawler(object):
         tInfo = []
         for url, dInfo in self.m_WaitingUrl.items():
             iType = dInfo["priority"]
-            iTime = dInfo.get("time", 0)
+            iTime = dInfo.get("time", misc.GetSecond())
             tInfo.append((url, iType, iTime))
         tInfo = sorted(tInfo, key=lambda x: x[2])
         tInfo = sorted(tInfo, key=lambda x: x[1], reverse=True)

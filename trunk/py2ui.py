@@ -12,6 +12,7 @@ def IsIgnore(sDir):
             return True
     return False
 
+
 for sDir, lstDir, lstFile in os.walk(os.getcwd()):
     if IsIgnore(sDir):
         continue
@@ -19,6 +20,6 @@ for sDir, lstDir, lstFile in os.walk(os.getcwd()):
         if not sFile.endswith(".ui"):
             continue
         sUIFile = os.path.join(sDir, sFile)
-        sPYFile = sUIFile[:-3] + "_ui.py"
+        sPYFile = sUIFile[:-3] + ".py"
         os.system("pyuic5 -o %s %s" % (sPYFile, sUIFile))
         print("ui2py:" + sPYFile)
