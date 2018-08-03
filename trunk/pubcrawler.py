@@ -83,8 +83,8 @@ class CPubCrawler(object):
         self._SaveOrDel(self.m_WaitingUrl, self.m_WaitingConfigPath)
         self._SaveOrDel(self.m_ReadyUrl, self.m_ReadyConfigPath)
         self._SaveOrDel(self.m_DoingUrl, self.m_DoingConfigPath)
-        self._SaveOrDel(self.m_DoneInfo, self.m_DoneInfoConfigPath)
         self._SaveOrDel(self.m_FailUrl, self.m_FailConfigPath)
+        misc.JsonDump(self.m_DoneInfo, self.m_DoneInfoConfigPath)
 
     def _SaveOrDel(self, dInfo, sPath):
         """如果需要保存的信息为空，那么就删除文件"""
@@ -135,11 +135,11 @@ class CPubCrawler(object):
 
         tInfo = []
         for url, dInfo in self.m_WaitingUrl.items():
-            iType = dInfo["priority"]
+            iType = dInfo.get("priority", 0)
             iTime = dInfo.get("time", misc.GetSecond())
             tInfo.append((url, iType, iTime))
-        tInfo = sorted(tInfo, key=lambda x: x[2])
-        tInfo = sorted(tInfo, key=lambda x: x[1], reverse=True)
+        tInfo = sorted(tInfo, key=lambda x: x[2])   # 优先级高的在前面
+        tInfo = sorted(tInfo, key=lambda x: x[1], reverse=True)  # 时间早的在前面
 
         while (len(self.m_ReadyUrl)) < self.m_MaxNum and tInfo:
             url, *args = tInfo.pop(0)
@@ -167,7 +167,6 @@ class CPubCrawler(object):
                 htmls = [f.result() for f in finished]
                 for url, dInfo, html in htmls:
                     await self.Parse(url, dInfo, html)
-            self._Save()
 
     async def Crawl(self, url, dInfo):
         r = await self.m_Session.get(url, headers=self.m_Headers)
