@@ -139,3 +139,15 @@ def InitLogging2(sFileName):
 
     ch = logging.StreamHandler()
     logger.addHandler(ch)
+
+
+def DowlandPic(dirpath, name, picdata):
+    MakeDirs(dirpath)
+    filename = os.path.join(dirpath, name)
+    with open(filename, "wb") as fpic:
+        fpic.write(picdata)
+
+
+def MakeDirs(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
