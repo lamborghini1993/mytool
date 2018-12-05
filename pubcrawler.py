@@ -7,8 +7,8 @@
 
 import os
 import asyncio
-import aiohttp
 import time
+import aiohttp
 
 from pubcode import misc
 
@@ -33,10 +33,11 @@ class CPubCrawler(object):
     }
 
     def __init__(self):
+        self.m_Session = None
         self.m_WaitingUrl = {}  # 等待爬虫的全部网页信息
         self.m_ReadyUrl = {}    # 准备爬虫的网页信息（根据优先级来，选取前m_MaxNum个需要爬取的网页）
         self.m_DoingUrl = {}    # 正在爬中的网页信息
-        self.m_FailUrl = {}     # 爬取是吧的网页信息
+        self.m_FailUrl = {}     # 爬取失败的网页信息
         self.m_DoneInfo = {}    # 爬虫完毕之后保存的信息
         self.m_Loop = asyncio.get_event_loop()
         self.m_Headers.update(self.m_MyHeader)
@@ -116,7 +117,7 @@ class CPubCrawler(object):
             misc.Write2File(self.m_ErrorPath, info, "a+")
 
         self._Save()
-        self.DebugPrint("Start_End")
+        print("爬取完毕...")
 
     def _Replace(self, sMsg, default="_"):
         for char in self.m_WrongChar:
@@ -142,7 +143,7 @@ class CPubCrawler(object):
         tInfo = sorted(tInfo, key=lambda x: x[1], reverse=True)  # 时间早的在前面
 
         while (len(self.m_ReadyUrl)) < self.m_MaxNum and tInfo:
-            url, *args = tInfo.pop(0)
+            url, *_ = tInfo.pop(0)
             self.m_ReadyUrl[url] = self.m_WaitingUrl.pop(url)
         return True
 
@@ -163,7 +164,7 @@ class CPubCrawler(object):
 
                 finished, unfinished = await asyncio.wait(tasks)
                 if unfinished:
-                    print("="*20, unfinished)
+                    print("=" * 20, unfinished)
                 htmls = [f.result() for f in finished]
                 for url, dInfo, html in htmls:
                     await self.Parse(url, dInfo, html)
