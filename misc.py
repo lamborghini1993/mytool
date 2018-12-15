@@ -13,7 +13,29 @@ import traceback
 import codecs
 import logging
 
+if "g_GlobalMgr" not in globals():
+    g_GlobalMgr = {}
 
+
+# --------------------全局管理器相关-------------------------------------
+def SetManager(sFlag, obj):
+    global g_GlobalMgr
+    g_GlobalMgr[sFlag] = obj
+
+
+def GetManager(sFlag, default=None):
+    return g_GlobalMgr.get(sFlag, default)
+
+
+def CallManagerFunc(sFlag, sfunc, *args):
+    obj = GetManager(sFlag)
+    func = getattr(obj, sfunc, None)
+    if not func:
+        raise Exception("error CallManagerFunc %s %s" % (sFlag, sfunc))
+    return func(*args)
+
+
+# --------------------文件相关-------------------------------------
 def JsonDump(data, path, **myArgs):
     dJsonArgs = {
         "ensure_ascii": False,
@@ -35,6 +57,26 @@ def JsonLoad(path, default=None, **myArgs):
     return default
 
 
+def Write2File(filename, msg, sType="a+"):
+    filename += ".log"
+    msg = "[{}]{}\n".format(Time2Str(), msg)
+    with codecs.open(filename, sType, "utf-8") as myfile:
+        myfile.write(msg)
+
+
+def DowlandPic(dirpath, name, picdata):
+    MakeDirs(dirpath)
+    filename = os.path.join(dirpath, name)
+    with open(filename, "wb") as fpic:
+        fpic.write(picdata)
+
+
+def MakeDirs(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+
+# ------------------------时间相关---------------------------------
 def GetSecond():
     curtime = int(time.time())
     return curtime
@@ -49,6 +91,18 @@ def Time2Str(ti=-1, timeformat="%Y-%m-%d %H:%M:%S"):
     return strtime
 
 
+def GetRunTime(func):
+    """获取func运行时间"""
+    def WrappedFunc(*args):
+        begintime = time.time()
+        result = func(*args)
+        endtime = time.time()
+        print("%s() %s" % (func.__name__, endtime - begintime))
+        return result
+    return WrappedFunc
+
+
+# ------------------------栈相关---------------------------------
 def TraceMsg(*args):
     """回溯栈信息（调用情况）,用于调用不明的bug分析"""
     txtlist = GetTraceText(*args)
@@ -99,24 +153,7 @@ def SysExceptHook(type, value, tb):
     print(result)
 
 
-def Write2File(filename, msg, sType="a+"):
-    filename += ".log"
-    msg = "[{}]{}\n".format(Time2Str(), msg)
-    with codecs.open(filename, sType, "utf-8") as myfile:
-        myfile.write(msg)
-
-
-def GetRunTime(func):
-    """获取func运行时间"""
-    def WrappedFunc(*args):
-        begintime = time.time()
-        result = func(*args)
-        endtime = time.time()
-        print("%s() %s" % (func.__name__, endtime - begintime))
-        return result
-    return WrappedFunc
-
-
+# ------------------------logging---------------------------------
 def InitLogging(sFileName):
     """这里默认编码为gbk，暂时不知道如何修改"""
     logging.basicConfig(
@@ -139,15 +176,3 @@ def InitLogging2(sFileName):
 
     ch = logging.StreamHandler()
     logger.addHandler(ch)
-
-
-def DowlandPic(dirpath, name, picdata):
-    MakeDirs(dirpath)
-    filename = os.path.join(dirpath, name)
-    with open(filename, "wb") as fpic:
-        fpic.write(picdata)
-
-
-def MakeDirs(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
