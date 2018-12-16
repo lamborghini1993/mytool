@@ -10,7 +10,7 @@ import asyncio
 import time
 import aiohttp
 
-from pubcode import misc
+from pubcode.pubfunc import pubmisc
 
 
 class CPubCrawler(object):
@@ -66,11 +66,11 @@ class CPubCrawler(object):
         pass
 
     def _Load(self):
-        self.m_WaitingUrl = misc.JsonLoad(self.m_WaitingConfigPath, {})
-        self.m_ReadyUrl = misc.JsonLoad(self.m_ReadyConfigPath, {})
-        self.m_DoingUrl = misc.JsonLoad(self.m_DoingConfigPath, {})
-        self.m_DoneInfo = misc.JsonLoad(self.m_DoneInfoConfigPath, {})
-        self.m_FailUrl = misc.JsonLoad(self.m_FailConfigPath, {})
+        self.m_WaitingUrl = pubmisc.JsonLoad(self.m_WaitingConfigPath, {})
+        self.m_ReadyUrl = pubmisc.JsonLoad(self.m_ReadyConfigPath, {})
+        self.m_DoingUrl = pubmisc.JsonLoad(self.m_DoingConfigPath, {})
+        self.m_DoneInfo = pubmisc.JsonLoad(self.m_DoneInfoConfigPath, {})
+        self.m_FailUrl = pubmisc.JsonLoad(self.m_FailConfigPath, {})
 
         self.DebugPrint("_Load")
 
@@ -85,12 +85,12 @@ class CPubCrawler(object):
         self._SaveOrDel(self.m_ReadyUrl, self.m_ReadyConfigPath)
         self._SaveOrDel(self.m_DoingUrl, self.m_DoingConfigPath)
         self._SaveOrDel(self.m_FailUrl, self.m_FailConfigPath)
-        misc.JsonDump(self.m_DoneInfo, self.m_DoneInfoConfigPath)
+        pubmisc.JsonDump(self.m_DoneInfo, self.m_DoneInfoConfigPath)
 
     def _SaveOrDel(self, dInfo, sPath):
         """如果需要保存的信息为空，那么就删除文件"""
         if dInfo:
-            misc.JsonDump(dInfo, sPath)
+            pubmisc.JsonDump(dInfo, sPath)
             return
         if os.path.exists(sPath):
             os.remove(sPath)
@@ -108,13 +108,13 @@ class CPubCrawler(object):
             self.m_Loop.run_until_complete(self.Run())
             self.m_Loop.close()
         except OSError as e:
-            info = misc.PythonError(str(e))
-            misc.Write2File(self.m_ErrorPath, info, "a+")
+            info = pubmisc.PythonError(str(e))
+            pubmisc.Write2File(self.m_ErrorPath, info, "a+")
             self._Restart()
             return
         except Exception as e:
-            info = misc.PythonError(str(e))
-            misc.Write2File(self.m_ErrorPath, info, "a+")
+            info = pubmisc.PythonError(str(e))
+            pubmisc.Write2File(self.m_ErrorPath, info, "a+")
 
         self._Save()
         print("爬取完毕...")
@@ -137,7 +137,7 @@ class CPubCrawler(object):
         tInfo = []
         for url, dInfo in self.m_WaitingUrl.items():
             iType = dInfo.get("priority", 0)
-            iTime = dInfo.get("time", misc.GetSecond())
+            iTime = dInfo.get("time", pubmisc.GetSecond())
             tInfo.append((url, iType, iTime))
         tInfo = sorted(tInfo, key=lambda x: x[2])   # 优先级高的在前面
         tInfo = sorted(tInfo, key=lambda x: x[1], reverse=True)  # 时间早的在前面

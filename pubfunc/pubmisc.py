@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 """
-@Author: xiaohao
-@Date: 2018-03-21 13:51:13
-@Desc: 各种通用函数
+@Author: lamborghini
+@Date: 2018-12-16 21:36:56
+@Desc: 各种杂乱的
 """
 
 import os
@@ -35,7 +35,39 @@ def CallManagerFunc(sFlag, sfunc, *args):
     return func(*args)
 
 
-# --------------------文件相关-------------------------------------
+# ------------------------时间相关---------------------------------
+def GetSecond():
+    curtime = int(time.time())
+    return curtime
+
+
+def Time2Str(ti=-1, timeformat="%Y-%m-%d %H:%M:%S"):
+    if ti < 0:
+        ltime = time.localtime()
+    else:
+        ltime = time.localtime(ti)
+    strtime = time.strftime(timeformat, ltime)
+    return strtime
+
+
+def Str2Time(sTime, timeformat="%Y-%m-%d %H:%M:%S"):
+    oTime = time.strptime(sTime, timeformat)
+    iTime = int(time.mktime(oTime))
+    return iTime
+
+
+def GetRunTime(func):
+    """获取func运行时间"""
+    def WrappedFunc(*args):
+        begintime = time.time()
+        result = func(*args)
+        endtime = time.time()
+        print("%s() %s" % (func.__name__, endtime - begintime))
+        return result
+    return WrappedFunc
+
+
+# ------------------------文件相关---------------------------------
 def JsonDump(data, path, **myArgs):
     dJsonArgs = {
         "ensure_ascii": False,
@@ -74,32 +106,6 @@ def DowlandPic(dirpath, name, picdata):
 def MakeDirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-
-
-# ------------------------时间相关---------------------------------
-def GetSecond():
-    curtime = int(time.time())
-    return curtime
-
-
-def Time2Str(ti=-1, timeformat="%Y-%m-%d %H:%M:%S"):
-    if ti < 0:
-        ltime = time.localtime()
-    else:
-        ltime = time.localtime(ti)
-    strtime = time.strftime(timeformat, ltime)
-    return strtime
-
-
-def GetRunTime(func):
-    """获取func运行时间"""
-    def WrappedFunc(*args):
-        begintime = time.time()
-        result = func(*args)
-        endtime = time.time()
-        print("%s() %s" % (func.__name__, endtime - begintime))
-        return result
-    return WrappedFunc
 
 
 # ------------------------栈相关---------------------------------
