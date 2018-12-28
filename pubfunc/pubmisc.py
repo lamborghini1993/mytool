@@ -12,6 +12,7 @@ import json
 import traceback
 import codecs
 import logging
+import types
 
 if "g_GlobalMgr" not in globals():
     g_GlobalMgr = {}
@@ -182,3 +183,11 @@ def InitLogging2(sFileName):
 
     ch = logging.StreamHandler()
     logger.addHandler(ch)
+
+
+def IsBoundMethod(func):
+    if not isinstance(func, types.MethodType):
+        return False
+    if not func.__self__:
+        return False
+    return True
