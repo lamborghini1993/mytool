@@ -156,7 +156,7 @@ def SysExceptHook(type, value, tb):
     while tb.tb_next is not None:
         tb = tb.tb_next
     info = tb.tb_frame.f_locals
-    result = msg + value + "\n" + info
+    result = "%s\n%s\n%s\n" % (msg, value, info)
     print(result)
 
 
