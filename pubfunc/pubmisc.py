@@ -152,12 +152,15 @@ def SysExceptHook(type, value, tb):
     重定向 sys.excepthook = SysExceptHook
     """
     msg = "".join(traceback.format_tb(tb))
-    value = str(value)
+    msg = msg + str(value) + "\n"
+    if not tb:
+        print(msg)
+        return
     while tb.tb_next is not None:
         tb = tb.tb_next
     info = tb.tb_frame.f_locals
-    result = "%s\n%s\n%s\n" % (msg, value, info)
-    print(result)
+    msg += "%s\n" % info
+    print(msg)
 
 
 # ------------------------logging---------------------------------
