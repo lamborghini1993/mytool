@@ -19,7 +19,7 @@ class Functor(object):
             self._objdesc = str(func.__self__)
             self._func = func.__func__
         else:
-            self._obj = func
+            self._obj = None
             self._func = func
         self._args = args
 
