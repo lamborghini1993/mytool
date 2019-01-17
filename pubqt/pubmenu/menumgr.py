@@ -47,6 +47,16 @@ class CMenu(QtCore.QObject):
         self.m_RootNode = CAbstraceNode("MenuBar")
         self.m_RootNode.SetData(menudefine.MENU_QTCLASS_NAME, QtWidgets.QMenuBar)
 
+    def GetSubMenu(self, sMenuPath):
+        lstPath = sMenuPath.split("/")
+        curNode = self.m_RootNode
+        for sPath in lstPath:
+            childNode = curNode.Find(sPath)
+            if not childNode:
+                return None
+            curNode = childNode
+        return curNode.m_QtObject
+
     def AddMenu(self, dInfo):
         if menudefine.MENU_SEPARATOR_NAME in dInfo:
             self.AddSeparator(dInfo)
