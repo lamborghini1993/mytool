@@ -11,12 +11,6 @@ from . import menudefine
 g_MenuMgr = None
 
 
-def InitMgr(oWindow):
-    global g_MenuMgr
-    if not g_MenuMgr:
-        g_MenuMgr = CMenuMgr()
-
-
 def GetMenuMgr():
     global g_MenuMgr
     if not g_MenuMgr:
@@ -24,9 +18,32 @@ def GetMenuMgr():
     return g_MenuMgr
 
 
-class CMenuMgr(QtCore.QObject):
+def InitMenu(oWindow):
+    oMenuMgr = GetMenuMgr()
+    return oMenuMgr.InitMenu(oWindow)
+
+
+def GetMenu(oWindow):
+    oMenuMgr = GetMenuMgr()
+    return oMenuMgr.InitMenu(oWindow)
+
+
+class CMenuMgr:
     def __init__(self):
-        super(CMenuMgr, self).__init__()
+        self.m_MenuInfo = {}
+
+    def InitMenu(self, oWindow):
+        ID = id(oWindow)
+        oMenu = self.m_MenuInfo.get(ID, None)
+        if not oMenu:
+            oMenu = CMenu()
+            self.m_MenuInfo[ID] = oMenu
+        return oMenu
+
+
+class CMenu(QtCore.QObject):
+    def __init__(self):
+        super(CMenu, self).__init__()
         self.m_RootNode = CAbstraceNode("MenuBar")
         self.m_RootNode.SetData(menudefine.MENU_QTCLASS_NAME, QtWidgets.QMenuBar)
 
