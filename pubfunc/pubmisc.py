@@ -163,34 +163,23 @@ def SysExceptHook(type, value, tb):
     print(msg)
 
 
-# ------------------------logging---------------------------------
-def InitLogging(sFileName):
-    """这里默认编码为gbk，暂时不知道如何修改"""
-    logging.basicConfig(
-        filename=sFileName + ".log",
-        format="[%(asctime)s %(levelname)s %(message)s]",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG,
-    )
-    ch = logging.StreamHandler()
-    logger = logging.getLogger()
-    logger.addHandler(ch)
-
-
-def InitLogging2(sFileName):
-    handler = logging.FileHandler(filename=sFileName, mode="a", encoding="utf-8")
-    handler.setFormatter(logging.Formatter("[%(asctime)s %(levelname)s %(message)s]"))
-    logger = logging.getLogger()
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
-
-    ch = logging.StreamHandler()
-    logger.addHandler(ch)
-
-
 def IsBoundMethod(func):
     if not isinstance(func, types.MethodType):
         return False
     if not func.__self__:
         return False
     return True
+
+
+def SetLogger(logname: str, filename: str, level: int=logging.DEBUG, stream: bool=True, format: str="%(asctime)s - %(levelname)s - %(message)s"):
+    """设置loggging"""
+    logger = logging.getLogger(logname)
+    handler = logging.FileHandler(filename=filename, mode="a", encoding="utf-8")
+    fmt = logging.Formatter(format)
+    handler.setFormatter(fmt)
+    logger.addHandler(handler)
+    logger.setLevel(level)
+    if stream:
+        ch = logging.StreamHandler()
+        logger.addHandler(ch)
+    return logger
